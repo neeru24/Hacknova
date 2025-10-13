@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Water Pollution Visualization - Interactive 3D exploration of water contamination">
+    <title>Water Pollution - EcoPulse</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'eco-blue': '#0ea5e9',
+                        'eco-green': '#10b981',
+                        'eco-orange': '#f97316',
+                        'eco-red': '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body class="font-sans bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-gray-900/90 backdrop-blur-sm border-b border-gray-700">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-r from-eco-blue to-eco-green rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">E</span>
+                    </div>
+                    <span class="text-xl font-bold">EcoPulse</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="hover:text-eco-blue transition-colors">Home</a>
+                    <a href="air.html" class="hover:text-eco-blue transition-colors">Air</a>
+                    <a href="water.html" class="text-eco-blue font-semibold">Water</a>
+                    <a href="light.html" class="hover:text-eco-blue transition-colors">Light</a>
+                </div>
+                
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-800">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="md:hidden hidden bg-gray-800 border-t border-gray-700">
+            <div class="px-4 py-2 space-y-2">
+                <a href="index.html" class="block py-2 hover:text-eco-blue transition-colors">Home</a>
+                <a href="air.html" class="block py-2 hover:text-eco-blue transition-colors">Air</a>
+                <a href="water.html" class="block py-2 text-eco-blue font-semibold">Water</a>
+                <a href="light.html" class="block py-2 hover:text-eco-blue transition-colors">Light</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-12 bg-gradient-to-br from-gray-900 via-blue-900/20 to-cyan-900/20">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                    Water <span class="text-eco-blue">Pollution</span> Reality
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    2 billion people lack access to safely managed drinking water. Explore interactive 3D visualizations.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+                <div class="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
+                    <div class="text-3xl font-bold text-eco-blue mb-2" data-counter="2">0</div>
+                    <div class="text-sm text-gray-400">Billion lack clean water</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
+                    <div class="text-3xl font-bold text-eco-red mb-2" data-counter="1900">0</div>
+                    <div class="text-sm text-gray-400">Million affected people</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
+                    <div class="text-3xl font-bold text-eco-orange mb-2" data-counter="1800">0</div>
+                    <div class="text-sm text-gray-400">Billion USD cost</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
+                    <div class="text-3xl font-bold text-eco-green mb-2" data-counter="78">0</div>
+                    <div class="text-sm text-gray-400">% global water access</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="py-12">
+        <div class="container mx-auto px-4">
+            <!-- 3D Visualization and Data Panel -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-12">
+                <!-- 3D Scene Container -->
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">3D Water Flow Simulation</h3>
+                        <select id="region-selector" class="bg-gray-700 border border-gray-600 rounded px-3 py-1 text-sm">
+                            <option value="asia">Asia</option>
+                            <option value="africa">Africa</option>
+                            <option value="europe">Europe</option>
+                            <option value="north_america">North America</option>
+                        </select>
+                    </div>
+                    
+                    <div class="relative bg-black rounded-lg overflow-hidden" style="height: 400px;">
+                        <canvas id="water-3d-scene" class="w-full h-full"></canvas>
+                        
+                        <div id="scene-loading" class="absolute inset-0 bg-gray-900/80 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="animate-spin w-12 h-12 border-4 border-eco-blue border-t-transparent rounded-full mx-auto mb-4"></div>
+                                <p class="text-gray-300">Loading Water Simulation...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-medium">Contamination Level</label>
+                            <span id="contamination-value" class="text-eco-red font-bold">High</span>
+                        </div>
+                        <input type="range" id="contamination-slider" min="0" max="100" value="65" 
+                               class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                </div>
+                
+                <!-- Data Panel -->
+                <div class="space-y-6">
+                    <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Current Water Quality</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-700/50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-eco-red" id="chemical-pollution">24.8</div>
+                                <div class="text-sm text-gray-400">Chemical mg/L</div>
+                            </div>
+                            <div class="bg-gray-700/50 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-eco-orange" id="microplastics">45.3</div>
+                                <div class="text-sm text-gray-400">Particles/L</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Contamination Sources</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span>Industrial Discharge</span>
+                                <span class="text-eco-red font-semibold">42%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Agricultural Runoff</span>
+                                <span class="text-eco-orange font-semibold">35%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Sewage Systems</span>
+                                <span class="text-yellow-500 font-semibold">23%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold mb-4">Regional Water Access</h3>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="water-access-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold mb-4">Water Quality Trends</h3>
+                    <div class="relative" style="height: 300px;">
+                        <canvas id="contamination-timeline"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-8 border-t border-gray-800">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-8 mb-6">
+                <a href="index.html" class="hover:text-eco-blue transition-colors">Home</a>
+                <a href="air.html" class="hover:text-eco-blue transition-colors">Air Pollution</a>
+                <a href="light.html" class="hover:text-eco-blue transition-colors">Light Pollution</a>
+            </div>
+            <p class="text-gray-400">&copy; 2024 EcoPulse. Environmental awareness through data visualization.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/water-3d.js"></script>
+    <script src="js/charts.js"></script>
+</body>
+</html>
