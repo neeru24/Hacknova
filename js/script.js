@@ -286,6 +286,198 @@ EcoPulse.initScrollReveal = () => {
   }
 };
 
+// Dashboard functionality
+EcoPulse.DashboardManager = {
+  init: function() {
+    this.setupDashboardControls();
+    this.setupChartTimeButtons();
+    this.updateDashboardData();
+    this.startDataUpdates();
+    this.initPollutionChart();
+  },
+  
+  setupDashboardControls: function() {
+    const modeButtons = document.querySelectorAll('.dashboard-mode-btn');
+    modeButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        modeButtons.forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        // In a real implementation, this would filter the dashboard content
+        // For now, we'll just add a visual effect
+        const cards = document.querySelectorAll('.dashboard-card');
+        cards.forEach(card => {
+          card.style.opacity = '1';
+          card.style.transform = 'scale(1)';
+        });
+      });
+    });
+  },
+  
+  setupChartTimeButtons: function() {
+    const timeButtons = document.querySelectorAll('.chart-time-btn');
+    timeButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        timeButtons.forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        // In a real implementation, this would update the chart data
+        // For now, we'll just update the button appearance
+        this.updateChartData(e.target.id.replace('chart-', ''));
+      });
+    });
+  },
+  
+  updateChartData: function(timeframe) {
+    // This would fetch new data based on the selected timeframe
+    // For demo purposes, we'll just show a loading effect
+    const chartContainer = document.querySelector('.chart-container');
+    chartContainer.style.opacity = '0.6';
+    
+    setTimeout(() => {
+      chartContainer.style.opacity = '1';
+    }, 500);
+  },
+  
+  updateDashboardData: function() {
+    // Simulate real-time data updates
+    this.updateAirQuality();
+    this.updateWaterQuality();
+    this.updateNoiseLevel();
+  },
+  
+  updateAirQuality: function() {
+    // Generate random but realistic air quality data
+    const value = Math.floor(Math.random() * 50) + 20; // 20-70 range
+    const airQualityValue = document.getElementById('air-quality-value');
+    const airQualityBar = document.getElementById('air-quality-bar');
+    const airQualityStatus = document.getElementById('air-quality-status');
+    
+    airQualityValue.textContent = value;
+    airQualityBar.style.width = value + '%';
+    
+    // Update status based on value
+    if (value <= 50) {
+      airQualityStatus.textContent = 'Good';
+      airQualityStatus.className = 'text-green-400';
+    } else if (value <= 100) {
+      airQualityStatus.textContent = 'Moderate';
+      airQualityStatus.className = 'text-yellow-400';
+    } else if (value <= 150) {
+      airQualityStatus.textContent = 'Unhealthy';
+      airQualityStatus.className = 'text-orange-400';
+    } else {
+      airQualityStatus.textContent = 'Hazardous';
+      airQualityStatus.className = 'text-red-400';
+    }
+  },
+  
+  updateWaterQuality: function() {
+    // Generate random but realistic water quality data
+    const value = Math.floor(Math.random() * 40) + 60; // 60-100 range
+    const waterQualityValue = document.getElementById('water-quality-value');
+    const waterQualityBar = document.getElementById('water-quality-bar');
+    const waterQualityStatus = document.getElementById('water-quality-status');
+    
+    waterQualityValue.textContent = value;
+    waterQualityBar.style.width = value + '%';
+    
+    // Update status based on value
+    if (value >= 90) {
+      waterQualityStatus.textContent = 'Excellent';
+      waterQualityStatus.className = 'text-green-400';
+    } else if (value >= 70) {
+      waterQualityStatus.textContent = 'Good';
+      waterQualityStatus.className = 'text-lime-400';
+    } else if (value >= 50) {
+      waterQualityStatus.textContent = 'Fair';
+      waterQualityStatus.className = 'text-yellow-400';
+    } else {
+      waterQualityStatus.textContent = 'Poor';
+      waterQualityStatus.className = 'text-red-400';
+    }
+  },
+  
+  updateNoiseLevel: function() {
+    // Generate random but realistic noise level data
+    const value = Math.floor(Math.random() * 30) + 45; // 45-75 range
+    const noiseLevelValue = document.getElementById('noise-level-value');
+    const noiseLevelBar = document.getElementById('noise-level-bar');
+    const noiseLevelStatus = document.getElementById('noise-level-status');
+    
+    noiseLevelValue.textContent = value;
+    noiseLevelBar.style.width = value + '%';
+    
+    // Update status based on value
+    if (value <= 55) {
+      noiseLevelStatus.textContent = 'Quiet';
+      noiseLevelStatus.className = 'text-green-400';
+    } else if (value <= 70) {
+      noiseLevelStatus.textContent = 'Moderate';
+      noiseLevelStatus.className = 'text-yellow-400';
+    } else if (value <= 85) {
+      noiseLevelStatus.textContent = 'Loud';
+      noiseLevelStatus.className = 'text-orange-400';
+    } else {
+      noiseLevelStatus.textContent = 'Dangerous';
+      noiseLevelStatus.className = 'text-red-400';
+    }
+  },
+  
+  startDataUpdates: function() {
+    // Update data every 10 seconds to simulate real-time updates
+    setInterval(() => {
+      this.updateDashboardData();
+    }, 10000);
+  },
+  
+  initPollutionChart: function() {
+    // Initialize the pollution trend chart
+    const ctx = document.getElementById('pollution-trend-chart');
+    if (ctx) {
+      // In a real implementation, we would use Chart.js or similar
+      // For now, we'll just set up the canvas dimensions
+      const container = ctx.parentElement;
+      ctx.width = container.clientWidth;
+      ctx.height = 300;
+      
+      // Draw a placeholder chart
+      const canvas = ctx.getContext('2d');
+      canvas.fillStyle = '#374151';
+      canvas.fillRect(0, 0, ctx.width, ctx.height);
+      
+      // Draw a simple line chart placeholder
+      canvas.strokeStyle = '#38bdf8';
+      canvas.lineWidth = 3;
+      canvas.beginPath();
+      canvas.moveTo(0, ctx.height - 50);
+      
+      // Generate a simple wave pattern
+      for (let i = 0; i < ctx.width; i += 20) {
+        const y = ctx.height - 80 - Math.sin(i / 30) * 30 - Math.random() * 20;
+        canvas.lineTo(i, y);
+      }
+      canvas.stroke();
+      
+      // Add labels
+      canvas.fillStyle = '#9ca3af';
+      canvas.font = '12px Arial';
+      canvas.fillText('Air', 10, 20);
+      canvas.fillStyle = '#22c55e';
+      canvas.fillText('Water', 10, 40);
+      canvas.fillStyle = '#8b5cf6';
+      canvas.fillText('Noise', 10, 60);
+      
+      // Update when window resizes
+      window.addEventListener('resize', () => {
+        ctx.width = container.clientWidth;
+        ctx.height = 300;
+        this.initPollutionChart();
+      });
+    }
+  }
+};
+
 // Initialize all functionalities
 document.addEventListener("DOMContentLoaded", () => {
   EcoPulse.initMobileMenu();
@@ -296,6 +488,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize accessibility features
   EcoPulse.AccessibilityManager.init();
   EcoPulse.KeyboardNavigation.init();
+  
+  // Initialize dashboard
+  EcoPulse.DashboardManager.init();
   
   // Set current year in footer
   const yearSpan = document.getElementById("year");
