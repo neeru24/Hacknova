@@ -4,6 +4,9 @@ on:
   issues:
     types: [opened]
 
+permissions:
+  issues: write
+
 jobs:
   label:
     permissions:
@@ -21,6 +24,7 @@ jobs:
                 issue_number: context.payload.issue.number,
                 labels: ["ECWoC26", "SWoC26"]
               });
+              console.log(`Successfully added labels to issue #${context.payload.issue.number}`);
             } catch (error) {
-              core.setFailed(`Failed to add labels: ${error.message}`);
+              console.warn(`Could not auto-label issue #${context.payload.issue.number}: ${error.message}`);
             }

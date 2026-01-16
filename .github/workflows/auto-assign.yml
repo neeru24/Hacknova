@@ -4,6 +4,9 @@ on:
   issues:
     types: [opened]
 
+permissions:
+  issues: write
+
 jobs:
   assign:
     permissions:
@@ -18,12 +21,14 @@ jobs:
               const issue = context.payload.issue;
               const creator = issue.user.login;
 
+            try {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
                 assignees: [creator],
               });
+              console.log(`Successfully assigned issue #${issue.number} to ${creator}`);
             } catch (error) {
-              core.setFailed(`Failed to assign issue: ${error.message}`);
+              console.warn(`Could not auto-assign issue #${issue.number}: ${error.message}`);
             }

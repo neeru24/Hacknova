@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened]
 
+permissions:
+  pull-requests: write
+  issues: write
+
 jobs:
   label:
     permissions:
@@ -22,6 +26,7 @@ jobs:
                 issue_number: context.payload.pull_request.number,
                 labels: ["ECWoC26", "SWoC26"]
               });
+              console.log(`Successfully added labels to PR #${context.payload.pull_request.number}`);
             } catch (error) {
-              core.setFailed(`Failed to add labels: ${error.message}`);
+              console.warn(`Could not auto-label PR #${context.payload.pull_request.number}: ${error.message}`);
             }
